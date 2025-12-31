@@ -61,7 +61,7 @@ export default function InvoiceDetailsPage() {
 
   const previewRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
-    content: () => previewRef.current,
+    contentRef: previewRef,
     documentTitle: invoiceRecord ? invoiceRecord.number : "invoice-preview",
   });
 
