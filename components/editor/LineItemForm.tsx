@@ -37,20 +37,17 @@ function createLineItemId() {
 function buildDefaultValues(
   initialValues: Partial<LineItem> | undefined,
   fallbackService: Service | undefined,
-): Partial<LineItem> {
+): any {
   const initialServiceId = initialValues?.serviceId ?? fallbackService?.id ?? "";
   const pricingModel =
     initialValues?.pricingModel ??
     fallbackService?.pricingModel ??
     ("fixed" as LineItem["pricingModel"]);
 
-  const base: Partial<LineItem> = {
+  const base = {
     id: initialValues?.id ?? createLineItemId(),
     serviceId: initialServiceId,
-    pricingModel,
-    qty:
-      initialValues?.qty ??
-      (pricingModel === "tiered" || pricingModel === "fixed" ? 1 : 1),
+    qty: initialValues?.qty ?? 1,
     drafts: initialValues?.drafts ?? 0,
     edits: initialValues?.edits ?? 0,
     titleOverride: initialValues?.titleOverride,
@@ -62,25 +59,35 @@ function buildDefaultValues(
     case "hourly":
       return {
         ...base,
+        pricingModel: "hourly",
         hours: initialValues?.hours ?? 1,
-      };
+      } as Partial<LineItem>;
     case "per_page":
       return {
         ...base,
+        pricingModel: "per_page",
         pages: initialValues?.pages ?? 1,
-      };
+      } as Partial<LineItem>;
     case "per_item":
       return {
         ...base,
+        pricingModel: "per_item",
         items: initialValues?.items ?? 1,
-      };
+      } as Partial<LineItem>;
     case "tiered":
       return {
         ...base,
+        pricingModel: "tiered",
         qty: initialValues?.qty ?? 1,
-      };
+      } as Partial<LineItem>;
+    case "fixed":
+      return {
+        ...base,
+        pricingModel: "fixed",
+        qty: 1,
+      } as Partial<LineItem>;
     default:
-      return { ...base, qty: 1 };
+      return base as Partial<LineItem>;
   }
 }
 
@@ -152,7 +159,7 @@ export function LineItemForm({
   const form = useForm<LineItem>({
     resolver: zodResolver(LineItemSchema),
     mode: "onChange",
-    defaultValues: buildDefaultValues(initialValues, primaryService),
+    defaultValues: buildDefaultValues(initialValues, primaryService) as any,
   });
 
   const {
