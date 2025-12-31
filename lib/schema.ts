@@ -182,6 +182,17 @@ export type Invoice = z.infer<typeof InvoiceSchema>;
 export const ServicesSchema = z.array(ServiceSchema);
 export const InvoicesSchema = z.array(InvoiceSchema);
 
+export const PresetSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().trim().min(1).optional(),
+  items: z.array(LineItemSchema).min(1, "Preset must contain at least one line item"),
+  createdAt: z.string().min(1),
+  updatedAt: z.string().min(1),
+});
+export type Preset = z.infer<typeof PresetSchema>;
+export const PresetsSchema = z.array(PresetSchema);
+
 export function lineItemValidatorForService(service: Service) {
   return LineItemSchema.superRefine((item, ctx) => {
     if (item.serviceId !== service.id) {

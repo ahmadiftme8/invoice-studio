@@ -44,7 +44,7 @@ export function ClientQuickForm({ onCreated, onClose }: ClientQuickFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1 text-right">
-        <label className="text-sm font-medium text-zinc-600" htmlFor="client-name">
+        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="client-name">
           {t("name")}
         </label>
         <input
@@ -53,12 +53,12 @@ export function ClientQuickForm({ onCreated, onClose }: ClientQuickFormProps) {
           required
           value={form.name}
           onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-          className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+          className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
         />
       </div>
 
       <div className="flex flex-col gap-1 text-right">
-        <label className="text-sm font-medium text-zinc-600" htmlFor="client-phone">
+        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="client-phone">
           {t("phone")}
         </label>
         <input
@@ -66,12 +66,12 @@ export function ClientQuickForm({ onCreated, onClose }: ClientQuickFormProps) {
           name="phone"
           value={form.phone}
           onChange={(event) => setForm((prev) => ({ ...prev, phone: event.target.value }))}
-          className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+          className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
         />
       </div>
 
       <div className="flex flex-col gap-1 text-right">
-        <label className="text-sm font-medium text-zinc-600" htmlFor="client-instagram">
+        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="client-instagram">
           {t("instagram")}
         </label>
         <input
@@ -79,7 +79,7 @@ export function ClientQuickForm({ onCreated, onClose }: ClientQuickFormProps) {
           name="instagram"
           value={form.instagram}
           onChange={(event) => setForm((prev) => ({ ...prev, instagram: event.target.value }))}
-          className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+          className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
         />
       </div>
 
@@ -88,14 +88,14 @@ export function ClientQuickForm({ onCreated, onClose }: ClientQuickFormProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900"
+            className="rounded-xl border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 transition hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             {actions("cancel")}
           </button>
         ) : null}
         <button
           type="submit"
-          className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800"
+          className="rounded-xl bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 transition hover:bg-zinc-800 dark:hover:bg-zinc-200"
         >
           {t("submit")}
         </button>

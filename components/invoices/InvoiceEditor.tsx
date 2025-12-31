@@ -116,7 +116,7 @@ export function InvoiceEditor({ mode, invoiceId, onConvert, onSaved }: InvoiceEd
   const t = useTranslations("invoices.editor");
   const messages = useTranslations("invoices.messages");
   const actions = useTranslations("common.actions");
-  const language = useAccountingStore((state) => state.settings.language ?? "fa");
+  const language = useAccountingStore((state) => state.settings.language ?? "en");
 
   const clients = useAccountingStore((state) => state.clients);
   const works = useAccountingStore((state) => state.works);

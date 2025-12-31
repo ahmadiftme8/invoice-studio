@@ -39,22 +39,22 @@ export default function InvoicesPage() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-6 py-12 lg:px-12">
-      <header className="flex flex-col gap-4 rounded-3xl border border-zinc-200 bg-white px-8 py-10 shadow-sm">
+      <header className="flex flex-col gap-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-gray-900 px-8 py-10 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4 text-right">
           <div className="flex flex-col gap-2">
-            <h1 className="text-3xl font-semibold text-zinc-900">{t("title")}</h1>
-            <p className="max-w-2xl text-sm text-zinc-600">{t("subtitle")}</p>
+            <h1 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-100">{t("title")}</h1>
+            <p className="max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">{t("subtitle")}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/invoices/new"
-              className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800"
+              className="rounded-xl bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 transition hover:bg-zinc-800 dark:hover:bg-zinc-200"
             >
               {editor("newTitle")}
             </Link>
             <Link
               href="/"
-              className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-900"
+              className="rounded-xl border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 transition hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
             >
               {settings.language === "en" ? "Dashboard" : "داشبورد"}
             </Link>
@@ -62,17 +62,17 @@ export default function InvoicesPage() {
         </div>
       </header>
 
-      <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+      <section className="rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-gray-900 p-6 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">{columns("number")}</h2>
-          <span className="text-xs font-medium text-zinc-400">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{columns("number")}</h2>
+          <span className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
             {numberFormatter.format(invoices.length)} {settings.language === "en" ? "records" : "فاکتور"}
           </span>
         </div>
 
         <div className="mt-6 overflow-x-auto">
           <table className="min-w-full border-collapse text-right text-sm">
-            <thead className="bg-zinc-50 text-xs font-medium text-zinc-500">
+            <thead className="bg-zinc-50 dark:bg-zinc-800 text-xs font-medium text-zinc-500 dark:text-zinc-400">
               <tr>
                 <th className="px-3 py-2">{columns("number")}</th>
                 <th className="px-3 py-2">{columns("client")}</th>
@@ -82,36 +82,36 @@ export default function InvoicesPage() {
                 <th className="px-3 py-2">{columns("actions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {enrichedInvoices.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-zinc-500">
+                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
                     {t("empty")}
                   </td>
                 </tr>
               ) : (
                 enrichedInvoices.map((invoice) => (
-                  <tr key={invoice.id}>
-                    <td className="px-3 py-3 text-sm font-medium text-zinc-900">{invoice.number}</td>
-                    <td className="px-3 py-3 text-sm text-zinc-700">{invoice.clientName}</td>
-                    <td className="px-3 py-3 text-sm text-emerald-600">
+                  <tr key={invoice.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                    <td className="px-3 py-3 text-sm font-medium text-zinc-900 dark:text-zinc-100">{invoice.number}</td>
+                    <td className="px-3 py-3 text-sm text-zinc-700 dark:text-zinc-300">{invoice.clientName}</td>
+                    <td className="px-3 py-3 text-sm text-emerald-600 dark:text-emerald-400">
                       {numberFormatter.format(invoice.payable)} {invoice.currency}
                     </td>
-                    <td className="px-3 py-3 text-xs text-zinc-500">
+                    <td className="px-3 py-3 text-xs text-zinc-500 dark:text-zinc-400">
                       {invoice.type === "final" ? status("final") : status("draft")}
                     </td>
-                    <td className="px-3 py-3 text-xs text-zinc-500">{invoice.dateJalali}</td>
+                    <td className="px-3 py-3 text-xs text-zinc-500 dark:text-zinc-400">{invoice.dateJalali}</td>
                     <td className="px-3 py-3">
                       <div className="flex flex-wrap items-center justify-end gap-2">
                         <Link
                           href={`/invoices/${invoice.id}`}
-                          className="rounded-lg border border-zinc-300 px-3 py-2 text-xs text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900"
+                          className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400 transition hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
                         >
                           {settings.language === "en" ? "Details" : "جزئیات"}
                         </Link>
                         <Link
                           href={`/i/${invoice.id}`}
-                          className="rounded-lg border border-zinc-300 px-3 py-2 text-xs text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900"
+                          className="rounded-lg border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400 transition hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
                         >
                           {settings.language === "en" ? "Share link" : "اشتراک"}
                         </Link>

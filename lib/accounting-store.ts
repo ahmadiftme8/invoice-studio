@@ -123,7 +123,7 @@ const DEFAULT_SETTINGS: SettingsRecord = {
   defaultTaxRate: 0.09,
   defaultCurrency: "IRR",
   theme: "light",
-  language: "fa",
+  language: "en",
   preCounter: 0,
   finalCounter: 0,
 };
@@ -420,7 +420,39 @@ export const useAccountingStore = create<AccountingStoreState>()(
     {
       name: "invoice-studio-accounting",
       storage: createJSONStorage(() => localStorage),
-      version: 1,
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        // Migrate language default from "fa" to "en"
+        if (persistedState?.settings) {
+          if (!persistedState.settings.language || persistedState.settings.language === "fa") {
+            persistedState.settings.language = "en";
+          }
+        }
+        return persistedState;
+      },
+      merge: (persistedState: any, currentState: AccountingStoreState) => {
+        if (!persistedState) {
+          return currentState;
+        }
+
+        // Ensure language defaults to "en" if not set or if it's "fa"
+        const persistedSettings = persistedState.settings || {};
+        const language = (!persistedSettings.language || persistedSettings.language === "fa") 
+          ? "en" 
+          : persistedSettings.language;
+
+        return {
+          ...currentState,
+          clients: persistedState.clients || currentState.clients,
+          works: persistedState.works || currentState.works,
+          invoices: persistedState.invoices || currentState.invoices,
+          settings: {
+            ...currentState.settings,
+            ...persistedSettings,
+            language,
+          },
+        };
+      },
       partialize: (state) => ({
         clients: state.clients,
         works: state.works,

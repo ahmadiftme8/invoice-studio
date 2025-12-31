@@ -78,7 +78,7 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-right">
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-zinc-600" htmlFor="work-title">
+        <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="work-title">
           {t("title")}
         </label>
         <input
@@ -86,13 +86,13 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
           required
           value={state.title}
           onChange={(event) => setState((prev) => ({ ...prev, title: event.target.value }))}
-          className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+          className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
         />
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-zinc-600" htmlFor="work-base-price">
+          <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="work-base-price">
             {t("basePrice")}
           </label>
           <input
@@ -100,11 +100,11 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
             inputMode="numeric"
             value={state.basePrice}
             onChange={(event) => setState((prev) => ({ ...prev, basePrice: event.target.value }))}
-            className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+            className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-zinc-600" htmlFor="work-draft-price">
+          <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="work-draft-price">
             {t("draftPrice")}
           </label>
           <input
@@ -112,11 +112,11 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
             inputMode="numeric"
             value={state.draftPrice}
             onChange={(event) => setState((prev) => ({ ...prev, draftPrice: event.target.value }))}
-            className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+            className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-zinc-600" htmlFor="work-edit-price">
+          <label className="text-sm font-medium text-zinc-600 dark:text-zinc-400" htmlFor="work-edit-price">
             {t("editPrice")}
           </label>
           <input
@@ -124,7 +124,7 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
             inputMode="numeric"
             value={state.editPrice}
             onChange={(event) => setState((prev) => ({ ...prev, editPrice: event.target.value }))}
-            className="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-800 outline-none transition focus:border-zinc-500"
+            className="w-full rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-gray-800 px-4 py-2 text-sm text-zinc-800 dark:text-zinc-200 outline-none transition focus:border-zinc-500 dark:focus:border-zinc-600"
           />
         </div>
       </div>
@@ -134,14 +134,14 @@ export function WorkForm({ mode, work, onSaved, onCancel }: WorkFormProps) {
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-xl border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 transition hover:border-zinc-400 hover:text-zinc-900"
+            className="rounded-xl border border-zinc-300 dark:border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 transition hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             {actions("cancel")}
           </button>
         ) : null}
         <button
           type="submit"
-          className="rounded-xl bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800"
+          className="rounded-xl bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 transition hover:bg-zinc-800 dark:hover:bg-zinc-200"
         >
           {mode === "edit" ? t("submitUpdate") : t("submitNew")}
         </button>

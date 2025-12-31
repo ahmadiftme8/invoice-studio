@@ -1,27 +1,244 @@
 @import "tailwindcss";
 
+/* Light mode - Original values (unchanged) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --wild-sand: #f4f4f4; /* Page Background */
+  --ebony-clay: #20272e; /* Text Color */
+  --geyser: #d1e4e2; /* Mint/Teal */
+  --pale-rose: #ffd6ea; /* Pink */
+  --cream-brulee: #ffe6a6; /* Yellow */
+  --prelude: #d7cae8; /* Purple */
+  --white: #ffffff;
+  
+  --background: var(--wild-sand);
+  --foreground: var(--ebony-clay);
+  
+  /* Additional color variables for dark mode */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* Dark mode variables - Strictly scoped to data-theme="dark" */
+:root[data-theme="dark"] {
+  --wild-sand: #1a1a1a;
+  --ebony-clay: #f9fafb;
+  --geyser: #2d3d3b;
+  --pale-rose: #3d2a35;
+  --cream-brulee: #3d3526;
+  --prelude: #2d2835;
+  --white: #2a2a2a;
+  
+  --background: #111827;
+  --foreground: #f9fafb;
+  
+  /* Dark mode gray scale */
+  --gray-50: #111827;
+  --gray-100: #1f2937;
+  --gray-200: #374151;
+  --gray-300: #4b5563;
+  --gray-400: #6b7280;
+  --gray-500: #9ca3af;
+  --gray-600: #d1d5db;
+  --gray-700: #e5e7eb;
+  --gray-800: #f3f4f6;
+  --gray-900: #f9fafb;
+}
+
+/* Tailwind v4 dark mode configuration */
+/* The dark class is added to html element in AppProviders */
+/* Tailwind will automatically use .dark class for dark: variants */
+
+/* Ensure light mode colors are always applied when not in dark mode */
+html:not(.dark) {
+  /* Force light mode colors */
+  --prelude: #d7cae8;
+  --geyser: #d1e4e2;
+  --pale-rose: #ffd6ea;
+  --cream-brulee: #ffe6a6;
+  --ebony-clay: #20272e;
+  --white: #ffffff;
+  --wild-sand: #f4f4f4;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-nunito), var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-vazirmatn), var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-nunito), var(--font-geist-sans), system-ui, sans-serif;
   transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Global dark mode base styles - ensures all elements adapt */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* CSS variable for button text color - adapts to theme */
+:root {
+  --button-text-color: #ffffff;
+}
+
+[data-theme="dark"] {
+  --button-text-color: #20272e;
+}
+
+/* Ensure form elements adapt to dark mode */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+/* Ensure scrollbars adapt */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode utility classes */
+[data-theme="dark"] .dark\:bg-dark-bg {
+  background-color: var(--background);
+}
+
+[data-theme="dark"] .dark\:text-dark-text {
+  color: var(--foreground);
+}
+
+[data-theme="dark"] .dark\:bg-dark-card {
+  background-color: #1f2937;
+}
+
+[data-theme="dark"] .dark\:border-dark-border {
+  border-color: #374151;
+}
+
+/* Revenue Card Wave Animations - Stationary waves with amplitude variations */
+@keyframes waveAmplitude {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(1.15) translateY(-8px);
+  }
+}
+
+@keyframes waveAmplitude2 {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(1.1) translateY(5px);
+  }
+}
+
+@keyframes waveAmplitude3 {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(1.2) translateY(-5px);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(20px, -20px) scale(1.1);
+  }
+  66% {
+    transform: translate(-15px, 15px) scale(0.9);
+  }
+}
+
+@keyframes meshMove {
+  0%, 100% {
+    transform: translate(0, 0);
+    background-position: 0% 0%;
+  }
+  50% {
+    transform: translate(30px, -30px);
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes waveBottomAmplitude {
+  0%, 100% {
+    transform: scaleY(1) translateY(0);
+  }
+  50% {
+    transform: scaleY(1.1) translateY(-3px);
+  }
+}
+
+.wave-amplitude-1 {
+  animation: waveAmplitude 8s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.wave-amplitude-2 {
+  animation: waveAmplitude2 10s ease-in-out infinite;
+  animation-delay: 2s;
+  transform-origin: bottom;
+}
+
+.wave-amplitude-3 {
+  animation: waveAmplitude3 12s ease-in-out infinite;
+  animation-delay: 1s;
+  transform-origin: bottom;
+}
+
+.float-animation-1 {
+  animation: float 8s ease-in-out infinite;
+}
+
+.float-animation-2 {
+  animation: float 6s ease-in-out infinite reverse;
+  animation-delay: 2s;
+}
+
+.float-animation-3 {
+  animation: float 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.mesh-animation {
+  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 50%), 
+              radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 0%, transparent 50%);
+  background-size: 200% 200%;
+  animation: meshMove 12s ease-in-out infinite;
+}
+
+[data-theme="dark"] .mesh-animation {
+  background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%), 
+              radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+}
+
+.wave-bottom-1 {
+  animation: waveBottomAmplitude 7s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.wave-bottom-2 {
+  animation: waveBottomAmplitude 9s ease-in-out infinite reverse;
+  animation-delay: 1.5s;
+  transform-origin: bottom;
 }

@@ -10,6 +10,9 @@ import {
   InvoiceSchema,
   InvoicesSchema,
   LineItem,
+  Preset,
+  PresetSchema,
+  PresetsSchema,
   Service,
   ServiceSchema,
   ServicesSchema,
@@ -51,9 +54,18 @@ type InvoiceUpdateInput = {
   currency?: Invoice["currency"];
 };
 
+type NewPresetInput = Omit<Preset, "id" | "createdAt" | "updatedAt"> & {
+  id?: string;
+};
+
+type PresetUpdateInput = Partial<Omit<Preset, "id" | "createdAt" | "updatedAt">> & {
+  items?: LineItem[];
+};
+
 type InvoiceStoreState = {
   services: Service[];
   invoices: Invoice[];
+  presets: Preset[];
   settings: StoreSettings;
   addService: (input: NewServiceInput) => Service;
   updateService: (id: Service["id"], changes: ServiceUpdateInput) => Service | undefined;
@@ -61,6 +73,10 @@ type InvoiceStoreState = {
   addInvoice: (input: InvoiceCreationInput) => Invoice;
   updateInvoice: (id: Invoice["id"], changes: InvoiceUpdateInput) => Invoice | undefined;
   deleteInvoice: (id: Invoice["id"]) => void;
+  addPreset: (input: NewPresetInput) => Preset;
+  updatePreset: (id: Preset["id"], changes: PresetUpdateInput) => Preset | undefined;
+  deletePreset: (id: Preset["id"]) => void;
+  applyPresetToInvoice: (presetId: Preset["id"], invoiceId: Invoice["id"]) => Invoice | undefined;
   resetStore: () => void;
 };
 
@@ -230,6 +246,49 @@ function buildUpdatedInvoice(
   return { record: invoice, settings: nextSettings };
 }
 
+function normalizeOptionalText(value?: string | null): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+function sanitizePresetItems(items: LineItem[], services: Service[]): LineItem[] {
+  return items.map((item, index) => {
+    const service = services.find((entry) => entry.id === item.serviceId);
+
+    if (!service) {
+      throw new Error(`Service ${item.serviceId} not found for preset line ${index + 1}`);
+    }
+
+    const candidate: LineItem = {
+      ...item,
+      id: item.id && item.id.length > 0 ? item.id : createId(`preset-line-${index + 1}`),
+      pricingModel: service.pricingModel,
+    };
+
+    return lineItemValidatorForService(service).parse(candidate);
+  });
+}
+
+function normalizePreset(input: NewPresetInput, services: Service[]): Preset {
+  const now = isoNow();
+  const items = sanitizePresetItems(input.items, services);
+  const candidate: Preset = {
+    ...input,
+    id: input.id ?? createId("preset"),
+    title: input.title,
+    description: normalizeOptionalText(input.description),
+    items,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  return PresetSchema.parse(candidate);
+}
+
 const DEFAULT_SETTINGS: StoreSettings = StoreSettingsSchema.parse({
   defaultTaxPercent: 9,
   defaultCurrency: "rial",
@@ -284,6 +343,36 @@ const SERVICE_SEED = ServicesSchema.parse([
     description: "Menu layout and typography",
   },
   {
+    id: "svc-social-post",
+    title: "Social Post",
+    pricingModel: "per_item",
+    basePriceRial: 1800000,
+    draftPriceRial: 250000,
+    editPriceRial: 200000,
+    unitLabel: "post",
+    description: "Social media graphics per post",
+  },
+  {
+    id: "svc-banner",
+    title: "Campaign Banner",
+    pricingModel: "fixed",
+    basePriceRial: 9000000,
+    draftPriceRial: 1200000,
+    editPriceRial: 750000,
+    unitLabel: "banner",
+    description: "Hero or out-of-home banner design",
+  },
+  {
+    id: "svc-stationery",
+    title: "Stationery System",
+    pricingModel: "per_item",
+    basePriceRial: 2500000,
+    draftPriceRial: 400000,
+    editPriceRial: 300000,
+    unitLabel: "set",
+    description: "Letterheads, cards, envelopes per set",
+  },
+  {
     id: "svc-packaging",
     title: "Packaging",
     pricingModel: "tiered",
@@ -298,6 +387,82 @@ const SERVICE_SEED = ServicesSchema.parse([
   },
 ]);
 
+const PRESET_SEED: Preset[] = [
+  (() => {
+    const timestamp = isoNow();
+    return PresetSchema.parse({
+      id: "preset-restaurant-starter",
+      title: "Restaurant Starter",
+      description: "Menu, social posts, and hero banner bundle.",
+      items: sanitizePresetItems(
+        [
+          {
+            id: "preset-line-restaurant-menu",
+            serviceId: "svc-restaurant-menu",
+            pricingModel: "per_page",
+            qty: 1,
+            pages: 2,
+          },
+          {
+            id: "preset-line-social-post",
+            serviceId: "svc-social-post",
+            pricingModel: "per_item",
+            qty: 1,
+            items: 3,
+          },
+          {
+            id: "preset-line-banner",
+            serviceId: "svc-banner",
+            pricingModel: "fixed",
+            qty: 1,
+          },
+        ],
+        SERVICE_SEED,
+      ),
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+  })(),
+  (() => {
+    const timestamp = isoNow();
+    return PresetSchema.parse({
+      id: "preset-brand-identity-premium",
+      title: "Brand Identity Premium",
+      description: "Logo, brand book, and stationery with two edit rounds each.",
+      items: sanitizePresetItems(
+        [
+          {
+            id: "preset-line-logo-premium",
+            serviceId: "svc-logo",
+            pricingModel: "fixed",
+            qty: 1,
+            edits: 2,
+          },
+          {
+            id: "preset-line-brandbook-premium",
+            serviceId: "svc-brand-book",
+            pricingModel: "per_page",
+            qty: 1,
+            pages: 20,
+            edits: 2,
+          },
+          {
+            id: "preset-line-stationery-premium",
+            serviceId: "svc-stationery",
+            pricingModel: "per_item",
+            qty: 1,
+            items: 5,
+            edits: 2,
+          },
+        ],
+        SERVICE_SEED,
+      ),
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    });
+  })(),
+];
+
 function cloneService(service: Service): Service {
   if (service.pricingModel === "tiered") {
     return {
@@ -307,6 +472,7 @@ function cloneService(service: Service): Service {
   }
 
   const { tiers, ...rest } = service as Service & { tiers?: Service["tiers"] };
+  void tiers;
   return { ...rest };
 }
 
@@ -335,11 +501,23 @@ function cloneInvoices(invoices: Invoice[]): Invoice[] {
   return invoices.map(cloneInvoice);
 }
 
+function clonePreset(preset: Preset): Preset {
+  return {
+    ...preset,
+    items: preset.items.map((item) => ({ ...item })),
+  };
+}
+
+function clonePresets(presets: Preset[]): Preset[] {
+  return presets.map(clonePreset);
+}
+
 export const useInvoiceStore = create<InvoiceStoreState>()(
   persist(
-    (set, _get) => ({
+    (set) => ({
       services: cloneServices(SERVICE_SEED),
       invoices: [],
+      presets: clonePresets(PRESET_SEED),
       settings: cloneSettings(DEFAULT_SETTINGS),
       addService: (input) => {
         const service = normalizeService(input);
@@ -367,9 +545,29 @@ export const useInvoiceStore = create<InvoiceStoreState>()(
         return updated;
       },
       deleteService: (id) => {
-        set((state) => ({
-          services: state.services.filter((service) => service.id !== id),
-        }));
+        set((state) => {
+          const services = state.services.filter((service) => service.id !== id);
+          const presets = state.presets
+            .map((preset) => {
+              const nextItems = preset.items.filter((item) => item.serviceId !== id);
+              if (nextItems.length === 0) {
+                return null;
+              }
+
+              if (nextItems.length === preset.items.length) {
+                return preset;
+              }
+
+              return {
+                ...preset,
+                items: nextItems,
+                updatedAt: isoNow(),
+              };
+            })
+            .filter((preset): preset is Preset => Boolean(preset));
+
+          return { services, presets };
+        });
       },
       addInvoice: (input) => {
         let created: Invoice | undefined;
@@ -423,10 +621,106 @@ export const useInvoiceStore = create<InvoiceStoreState>()(
           invoices: state.invoices.filter((invoice) => invoice.id !== id),
         }));
       },
+      addPreset: (input) => {
+        let created: Preset | undefined;
+        set((state) => {
+          const preset = normalizePreset(input, state.services);
+          created = preset;
+          return {
+            presets: [...state.presets, preset],
+          };
+        });
+
+        if (!created) {
+          throw new Error("Failed to create preset");
+        }
+
+        return created;
+      },
+      updatePreset: (id, changes) => {
+        let updated: Preset | undefined;
+        set((state) => {
+          const presets = state.presets.map((preset) => {
+            if (preset.id !== id) {
+              return preset;
+            }
+
+            const items = changes.items
+              ? sanitizePresetItems(changes.items, state.services)
+              : preset.items;
+
+            const merged = PresetSchema.parse({
+              ...preset,
+              ...changes,
+              description:
+                changes.description !== undefined
+                  ? normalizeOptionalText(changes.description)
+                  : preset.description,
+              items,
+              updatedAt: isoNow(),
+            });
+
+            updated = merged;
+            return merged;
+          });
+
+          return { presets };
+        });
+
+        return updated;
+      },
+      deletePreset: (id) => {
+        set((state) => ({
+          presets: state.presets.filter((preset) => preset.id !== id),
+        }));
+      },
+      applyPresetToInvoice: (presetId, invoiceId) => {
+        let updated: Invoice | undefined;
+        set((state) => {
+          const preset = state.presets.find((entry) => entry.id === presetId);
+          const invoice = state.invoices.find((entry) => entry.id === invoiceId);
+
+          if (!preset || !invoice) {
+            return {};
+          }
+
+          const presetItems = sanitizePresetItems(preset.items, state.services).map((item) => {
+            const { id, ...rest } = item;
+            void id;
+            return rest;
+          });
+
+          const mergedItems: NewLineItemInput[] = [
+            ...invoice.items.map((item) => ({ ...item })),
+            ...presetItems,
+          ];
+
+          const { record, settings } = buildUpdatedInvoice(
+            invoice,
+            { items: mergedItems },
+            state.services,
+            state.settings,
+          );
+
+          const invoices = state.invoices.map((entry) =>
+            entry.id === invoiceId ? record : entry,
+          );
+
+          updated = record;
+
+          return {
+            invoices,
+            settings,
+          };
+        });
+
+        return updated;
+      },
       resetStore: () => {
         set({
           services: cloneServices(SERVICE_SEED),
           invoices: [],
+          presets: clonePresets(PRESET_SEED),
           settings: cloneSettings(DEFAULT_SETTINGS),
         });
       },
@@ -438,6 +732,7 @@ export const useInvoiceStore = create<InvoiceStoreState>()(
       partialize: (state) => ({
         services: state.services,
         invoices: state.invoices,
+        presets: state.presets,
         settings: state.settings,
       }),
       merge: (persisted, current) => {
@@ -447,24 +742,29 @@ export const useInvoiceStore = create<InvoiceStoreState>()(
 
         const servicesResult = ServicesSchema.safeParse(persisted.services);
         const invoicesResult = InvoicesSchema.safeParse(persisted.invoices);
+        const presetsResult = PresetsSchema.safeParse(persisted.presets);
         const settingsResult = StoreSettingsSchema.safeParse(persisted.settings);
 
-          const services = servicesResult.success
-            ? cloneServices(servicesResult.data)
-            : current.services;
-          const invoices = invoicesResult.success
-            ? cloneInvoices(invoicesResult.data)
-            : current.invoices;
-          const settings = settingsResult.success
-            ? cloneSettings(settingsResult.data)
-            : current.settings;
+        const services = servicesResult.success
+          ? cloneServices(servicesResult.data)
+          : current.services;
+        const invoices = invoicesResult.success
+          ? cloneInvoices(invoicesResult.data)
+          : current.invoices;
+        const presets = presetsResult.success
+          ? clonePresets(presetsResult.data)
+          : current.presets;
+        const settings = settingsResult.success
+          ? cloneSettings(settingsResult.data)
+          : current.settings;
 
-          return {
-            ...current,
-            services,
-            invoices,
-            settings,
-          };
+        return {
+          ...current,
+          services,
+          invoices,
+          presets,
+          settings,
+        };
       },
     },
   ),

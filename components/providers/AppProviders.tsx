@@ -16,7 +16,7 @@ type AppProvidersProps = {
 };
 
 export function AppProviders({ children }: AppProvidersProps) {
-  const language = useAccountingStore((state) => state.settings.language ?? "fa");
+  const language = useAccountingStore((state) => state.settings.language ?? "en");
   const theme = useAccountingStore((state) => state.settings.theme ?? "light");
 
   useEffect(() => {
@@ -35,8 +35,19 @@ export function AppProviders({ children }: AppProvidersProps) {
     }
 
     const html = document.documentElement;
-    html.dataset.theme = theme;
-    html.classList.toggle("theme-dark", theme === "dark");
+    
+    // Ensure we start with a clean state
+    html.classList.remove("dark");
+    
+    // Set data-theme attribute for CSS and Tailwind dark mode
+    if (theme === "dark") {
+      html.setAttribute("data-theme", "dark");
+      html.classList.add("dark");
+    } else {
+      html.setAttribute("data-theme", "light");
+      // Explicitly ensure dark class is removed for light mode
+      html.classList.remove("dark");
+    }
 
     const palette =
       theme === "dark"
@@ -47,10 +58,10 @@ export function AppProviders({ children }: AppProvidersProps) {
     html.style.setProperty("--foreground", palette.foreground);
   }, [theme]);
 
-  const messages = messagesMap[language as "fa" | "en"] ?? faMessages;
+  const messages = messagesMap[language as "fa" | "en"] ?? enMessages;
 
   return (
-    <NextIntlClientProvider locale={language} messages={messages}>
+    <NextIntlClientProvider locale={language} messages={messages} timeZone="Asia/Tehran">
       {children}
     </NextIntlClientProvider>
   );
